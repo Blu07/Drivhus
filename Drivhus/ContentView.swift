@@ -9,53 +9,57 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
-
+    
+    @State var selection = 3
+    
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
-                }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-        } detail: {
-            Text("Select an item")
-        }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
-        }
+        
+        
+        TabView (selection: $selection) {
+         
+         
+         Database()
+         .tabItem {
+         Image(systemName: "cylinder.split.1x2")
+         Text("Database")
+         }.tag(1)
+         
+         DatabaseControl()
+         .tabItem {
+         Image(systemName: "plus")
+         Text("Add Sensor")
+         }.tag(2)
+         
+         Home()
+         .tabItem {
+         Image(systemName: "house")
+         Text("Home")
+         }.tag(3)
+         
+         LoginView()
+          .tabItem {
+          Image(systemName: "person")
+          Text("Account")
+          }.tag(4)
+          
+         }
+         .accentColor(Color(hex: 0xC36F48))  // Active tab color
     }
 }
+    
+
+
+extension Color {
+    init(hex: Int, alpha: Double = 1.0) {
+        let red = Double((hex & 0xff0000) >> 16) / 255.0
+        let green = Double((hex & 0xff00) >> 8) / 255.0
+        let blue = Double((hex & 0xff) >> 0) / 255.0
+        self.init(.sRGB, red: red, green: green, blue: blue, opacity: alpha)
+    }
+}
+
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
 }
+

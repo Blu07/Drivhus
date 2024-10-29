@@ -4,29 +4,27 @@
 //
 //  Created by Blu William Opland on 26/10/2024.
 //
+//
+// https://developers.google.com/identity/sign-in/ios/sign-in#using-swiftui
 
 import SwiftUI
 import SwiftData
 
+import GoogleSignIn
+import GoogleSignInSwift
+
 @main
 struct DrivhusApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
+    
+    @StateObject private var authModel = UserAuthModel() // Initialize UserAuthModel
 
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(authModel) // Provide UserAuthModel to the environment
         }
-        .modelContainer(sharedModelContainer)
     }
 }
+
+
+
